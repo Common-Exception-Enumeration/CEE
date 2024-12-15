@@ -83,12 +83,8 @@
         const urlParams = new URLSearchParams(window.location.search);
         const info = urlParams.get('info');
         const nodeTitle = urlParams.get('name') || 'Node Details';
-
-        // const img = document.createElement('img');
-        // img.src = 'src/head_less.jpg';
-        // img.alt = 'head_less';
-        //
-        // let isImage = true;
+        const nodeScenario = urlParams.get('scenario') || 'Node Details';
+        const nodeProperty = urlParams.get('property') || 'Node Details';
 
         // Set the page title dynamically
         document.getElementById('node-title').textContent = nodeTitle;
@@ -153,6 +149,8 @@
         } else {
             detailsContainer.textContent = 'No node information available.';
         }
+        detailsContainer.appendChild(createSection('scenario', nodeScenario));
+        detailsContainer.appendChild(createSection('property', nodeProperty));
     </script>
 </body>
 </html>

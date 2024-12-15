@@ -316,7 +316,7 @@
                         });
                     } else if (node.info) {
                         span.addEventListener('click', () => {
-                            window.location.href = `details.html?info=${encodeURIComponent(JSON.stringify(node.info))}&name=${encodeURIComponent(node.name)}`;
+                            window.location.href = `details.html?info=${encodeURIComponent(JSON.stringify(node.info))}&name=${encodeURIComponent(node.name)}&scenario=${encodeURIComponent(node.scenario)}&property=${encodeURIComponent(node.property)}`;
                         });
                     }
 

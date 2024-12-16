@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="./src/logo.png" />
     <title>Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-java.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -33,7 +36,7 @@
             color: #333;
             cursor: pointer;
             background-color: #cccccc;
-            padding-left:5px;
+            padding-left: 5px;
             margin: 0;
             border-top: 1px solid #eeeeee;
             border-bottom: 2px solid #BAC5E3;
@@ -87,10 +90,12 @@
         const nodeScenario = urlParams.get('scenario') || 'Node Details';
         const nodeProperty = urlParams.get('property') || 'Node Details';
 
+        document.title = nodeTitle;
+
         // Set the page title dynamically
         document.getElementById('node-title').textContent = nodeTitle;
 
-        function createSection(title, content) {
+        function createSection(title, content, isCode = false) {
             const img = document.createElement('img');
             img.src = 'src/head_less.jpg';
             img.alt = 'head_less';
@@ -106,26 +111,39 @@
             header.classList.add('section-div');
 
             header.insertBefore(img, header.firstChild);
-            
-            header.addEventListener('click',() => {
+
+            header.addEventListener('click', () => {
                 if (isImage) {
                     img.src = 'src/head_more.jpg';
                     img.alt = 'head_more';
-                }
-                else {
+                } else {
                     img.src = 'src/head_less.jpg';
                     img.alt = 'head_less';
                 }
                 isImage = !isImage;
-            })
+            });
 
             const contentDiv = document.createElement('div');
             contentDiv.classList.add('content');
+            
             if (typeof content === 'string') {
-                contentDiv.textContent = content.replace(/"/g, '"').replace(/\n/g, '\n');
+                // If the content is Java code, apply syntax highlighting
+                if (isCode) {
+                    const codeBlock = document.createElement('pre');
+                    const codeElement = document.createElement('code');
+                    codeElement.classList.add('language-java'); // Define language as Java
+                    codeElement.textContent = content.replace(/"/g, '&quot;').replace(/\n/g, '\n').replace("```java", "").replace("```", "");
+                    codeBlock.appendChild(codeElement);
+                    contentDiv.appendChild(codeBlock);
+                    Prism.highlightElement(codeElement); // Apply syntax highlighting
+                } else {
+                    contentDiv.textContent = content;
+                }
             } else {
                 contentDiv.textContent = content;
             }
+            contentDiv.style.display = "block";
+
             section.appendChild(contentDiv);
 
             header.addEventListener('click', () => {
@@ -142,7 +160,12 @@
             try {
                 const parsedInfo = JSON.parse(info);
                 for (const [key, value] of Object.entries(parsedInfo)) {
-                    detailsContainer.appendChild(createSection(key, typeof value === 'string' ? value : JSON.stringify(value, null, 2)));
+                    if (key === "sample_code" || key === "handle_code") {
+                        console.log(key);
+                        detailsContainer.appendChild(createSection(key, typeof value === 'string' ? value : JSON.stringify(value, null, 2), true));
+                    } else {
+                        detailsContainer.appendChild(createSection(key, typeof value === 'string' ? value : JSON.stringify(value, null, 2)));
+                    }
                 }
             } catch (error) {
                 detailsContainer.textContent = 'Invalid node information.';
@@ -150,6 +173,7 @@
         } else {
             detailsContainer.textContent = 'No node information available.';
         }
+
         detailsContainer.appendChild(createSection('scenario', nodeScenario));
         detailsContainer.appendChild(createSection('property', nodeProperty));
     </script>
